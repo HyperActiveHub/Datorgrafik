@@ -35,7 +35,8 @@ var gl;
 // Anledningen är att detta endast är en upplistning av alla medlemsvariabler.
 // Vi kan senare komma åt dessa i alla funktioner genom att skriva exempelvis
 // 'shared.worldMatrix'.
-var shared = {
+var shared = 
+{
 
     // Transformationsmatriser, 'mat4' är ett externt bibliotek. Se http://glmatrix.net/docs/module-mat4.html
     worldMatrix: mat4.create(),               // W:     Transformerar från modellrymd till världsrymd
@@ -64,8 +65,11 @@ var shared = {
     square: { positionBuffer: null, colorBuffer: null, vertexCount: 0 },
     house: { positionBuffer: null, colorBuffer: null, vertexCount: 0 },
     house2: { indexBuffer: null, positionBuffer: null, colorBuffer: null, indiceCount: 0 },
-    planes: { indexBuffer: null, positionBuffer: null, colorBuffer: null, indiceCount: 0 },
+    planeBlue: { indexBuffer: null, positionBuffer: null, colorBuffer: null, indiceCount: 0 },
+    planeRed: { indexBuffer: null, positionBuffer: null, colorBuffer: null, indiceCount: 0 },
 
+    middleRed: vec3.fromValues(-40, 0, 0),
+    middleBlue: vec3.fromValues(40, 0, 0),
     // Här har jag definierat en bool för att hålla koll på om scenen är pausad.
     // Du kommer antagligen att behöva definiera dina egna flaggor på liknande
     // sätt.
@@ -75,9 +79,12 @@ var shared = {
 
 
 // Den här funktionen körs automatiskt när sidan laddas (se index.html).
-function main(context) {
+function main(context) 
+{
     gl = context;
 
+    //gl.enable(gl.BLEND);
+    
     // 'keydown' är en funktion i den här filen. Genom att lägga till den som 
     // en händelse-lyssnare så kommer den att kallas på automatiskt varje gång
     // som användaren trycker ner en knapp.
@@ -117,8 +124,9 @@ function main(context) {
     createSquare();
     createHouse();
     createHouse2();
-    createPlanes();
-
+    //createPlanes();
+    createPlaneBlue();
+    createPlaneRed();
     //
     // <--- Här bör du lägga till en eller flera gl.enable(...); för att slå
     //      på olika grafikkortsinställningar (exempelvis baksidegallring).
@@ -159,7 +167,9 @@ function createSquare()
     // färger som vi har vertiser i arrayen ovan, alltså loopar vi 6 
     // gånger.
     var colors = [];
-    for (var i = 0; i < 6; i++) { // Gray
+    for (var i = 0; i < 6; i++) 
+    { 
+        // Gray
         // Detta är ett enkelt (men inte särskilt effektivt) sätt att
         // lägga till element i slutet på en array i JavaScript. Varje
         // färg består av 4 värden. Längden på arrayen kommer alltså
@@ -199,7 +209,6 @@ function SetArrayBuffer(buffer, data)
 // Skapar det första huset (du måste själv implementera den här funktionen)
 function createHouse() 
 {
-
     //
     // Den här funktionen måste du själv implementera. Du kan utgå 
     // ifrån koden i 'createSquare()' ovan, men modifiera den så att
@@ -277,36 +286,82 @@ function createHouse()
         0, 0, 1, 1,
         0, 1, 0, 1,
 
-        1, 1, 0, 1
-        // 1, 0, 0, 1,
-        // 0, 0, 1, 1,
-        // 0, 1, 0, 1
+        1, 1, 0, 1,
+        1, 0, 0, 1,
+        0, 0, 1, 1,
+
+        1, 0, 0, 1,
+        0, 1, 1, 1,
+        0, 0, 1, 1,
+
+        1, 1, 0, 1,
+        0, 1, 1, 1,
+        1, 0, 0, 1,
+
+        0, 1, 1, 1,
+        0, 0, 1, 1,
+        1, 0, 0, 1,
+
+        1, 0, 0, 1,
+        0, 0, 1, 1,
+        0, 1, 1, 1,
+
+        0, 0, 1, 1,
+        0, 1, 0, 1,
+        0, 1, 1, 1,
+
+        1, 0, 0, 1,
+        1, 1, 0, 1,
+        0, 1, 1, 1,
+
+        1, 1, 0, 1,
+        0, 0, 1, 1,
+        0, 1, 1, 1,
+
+        1, 1, 0, 1,
+        0, 1, 0, 1,
+        0, 0, 1, 1,
+
+        0, 1, 0, 1,
+        0, 0, 1, 1,
+        1, 0, 0, 1,
+
+        1, 0, 0, 1,
+        0, 0, 1, 1,
+        1, 1, 0, 1,
+
+        1, 1, 0, 1,
+        0, 0, 1, 1,
+        0, 1, 1, 1,
+
+        1, 1, 0, 1,
+        0, 1, 1, 1,
+        0, 1, 0, 1,
+
+        1, 1, 0, 1,
+        0, 1, 0, 1,
+        1, 0, 0, 1,
+
+        1, 1, 0, 1,
+        1, 0, 0, 1,
+        0, 1, 1, 1
     ];    
-    //temp same color for all vertices
     
     shared.house.vertexCount = positions.length / 3;
-    
-    // if(colors.length / 4 != shared.house.vertexCount)
-    // console.error("colors.length != vertexCount. vertexCount = " + shared.house.vertexCount, this);
-    // //if(shared.house.vertexCount != )
 
     shared.house.positionBuffer = gl.createBuffer();
     SetArrayBuffer(shared.house.positionBuffer, positions);
 
     shared.house.colorBuffer = gl.createBuffer();
     SetArrayBuffer(shared.house.colorBuffer, colors);
-
-
-
-
 }// function createHouse()
 
 
 
 // Skapar det andra huset (du måste ändra här så att den målar ut ett hus
 // istället för en kvadrat)
-function createHouse2() {
-
+function createHouse2() 
+{
     //
     // Detta hus skall se identiskt ut som det förra, men istället för
     // att ange samma hörn flera gånger skall du använda en indexlista.
@@ -317,28 +372,54 @@ function createHouse2() {
     // Här lagras varje unikt hörn. När du är färdig kommer den att
     // bestå av 10 hörnen (index 0 - 9) och alltså totalt 30 nummer.
     var vertices = [
-        0, -15, -15, // Hörn 0     <--- OBS! Dessa hörn skall bytas ut!
-        0, -15, 15,  // Hörn 1
-        0, 15, -15,  // Hörn 2
-        0, 15, 15    // Hörn 3
+        -10, 5, 10,
+        10, 5, 10,
+        -10, 15, 10,
+        10, 15, 10,
+        0, 25, 10,
+        -10, 5, -10,
+        -10, 15, -10,
+        0, 25, -10,
+        10, 5, -10,
+        10, 15, -10
     ];
 
     // Här lagras varje hörns färg i samma ordning som ovan. När du är
     // färdig kommer den att bestå av 10 färger (index 0 - 9) och
     // alltså totalt 40 nummer (10 * 4).
     var colors = [ 
-        1, 0, 0, 1, // Röd        <--- OBS! Dessa färger skall bytas ut!
-        0, 1, 0, 1, // Grön
-        0, 0, 1, 0, // Blå
-        1, 1, 1, 1  // Vit
+        0, 1, 1, 1,
+        1, 0, 0, 1,
+        0, 0, 1, 1,
+        1, 1, 0, 1,
+        0, 1, 0, 1,
+        1, 1, 0, 1,
+        1, 0, 0, 1,
+        0, 1, 1, 1,
+        0, 1, 0, 1,
+        0, 0, 1, 1
     ];
 
     // Två trianglar definieras genom att lista indexen i arrayerna ovan.
     // När funktionen är färdig kommer den att bestå av 16 trianglar, dvs. 48
     // index.
     var indices = [ 
-        0, 1, 3, // Första triangeln   <--- OBS! Dessa index skall bytas ut!
-        0, 3, 2  // Andra triangeln
+        0, 1, 2,
+        1, 3, 2,
+        2, 3, 4,
+        0, 2, 5,
+        5, 2, 6,
+        2, 4, 6,
+        6, 4, 7,
+        5, 6, 8,
+        8, 6, 9,
+        9, 6, 7,
+        8, 9, 1,
+        9, 3, 1,
+        9, 7, 3,
+        7, 4, 3,
+        5, 1, 0,
+        5, 8, 1
     ];
 
     // Vi allokerar en ny buffer, men detta är en ELEMENT_ARRAY_BUFFER istället
@@ -370,20 +451,73 @@ function createHouse2() {
 
 
 // Skapar det första huset (du måste själv implementera den här funktionen)
-function createPlanes() {
+function createPlaneBlue() 
+{
+    var vertices = [
+        40, -10, 10,
+        40, 10, 10,
+        40, -10, -10,
+        40, 10, -10,
+    ];
 
-    //
-    // Här skapar du två halvtransparenta planes enligt uppgiften. Du kan skapa dem
-    // i samma objekt. Här är de värden som måste sättas:
-    //     shared.planes.indexBuffer
-    //     shared.planes.positionBuffer
-    //     shared.planes.colorBuffer
-    //     shared.planes.triangleCount
-    //
+    var colors = [
+        0, 0, 1, 0.5,
+        0, 0, 1, 0.5,
+        0, 0, 1, 0.5,
+        0, 0, 1, 0.5,
+    ];
 
-}// function createPlanes()
+    var indices = [
+        0, 1, 2,
+        2, 1, 3,
+    ];
+    
+    shared.planeBlue.indexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shared.planeBlue.indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
 
+    shared.planeBlue.positionBuffer = gl.createBuffer();
+    SetArrayBuffer(shared.planeBlue.positionBuffer, vertices);
 
+    shared.planeBlue.colorBuffer = gl.createBuffer();
+    SetArrayBuffer(shared.planeBlue.colorBuffer, colors);
+
+    shared.planeBlue.indiceCount = indices.length;
+}
+
+function createPlaneRed()
+{
+    var vertices = [
+         -40, -10, 10,
+         -40, 10, 10,
+         -40, -10, -10,
+         -40, 10, -10,
+      ];
+  
+      var colors = [
+         1, 0, 0, 0.5,
+         1, 0, 0, 0.5,
+          1, 0, 0, 0.5,
+         1, 0, 0, 0.5,       
+      ];
+  
+      var indices = [
+         0, 1, 2,
+         2, 1, 3,
+      ];
+      
+      shared.planeRed.indexBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shared.planeRed.indexBuffer);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+  
+      shared.planeRed.positionBuffer = gl.createBuffer();
+      SetArrayBuffer(shared.planeRed.positionBuffer, vertices);
+  
+      shared.planeRed.colorBuffer = gl.createBuffer();
+      SetArrayBuffer(shared.planeRed.colorBuffer, colors);
+  
+      shared.planeRed.indiceCount = indices.length;
+}
 
 // Denna funktion körs varje gång en knapp trycks ner på tangentbordet.
 // Jag har lagt in ett par tomma if-satser nedan som du förväntas modifiera.
@@ -423,8 +557,12 @@ function keydown(event)
     // Växla mellan 'over' och 'add' som metod för alpha-blending.
     else if (event.key === 'b') 
     {
-        //gl.enable(gl.BLEND);
-        //"Activates blending of the computed fragment color values. See WebGLRenderingContext.blendFunc()."
+        if(gl.getParameter(gl.BLEND_SRC_RGB) == gl.ONE)
+        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+        //gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+        else
+        //gl.blendFuncSeparate(gl.ONE, gl.ONE, gl.ONE, gl.ONE);
+        gl.blendFunc(gl.ONE, gl.ONE);
     }
     
 }// function keydown()
@@ -434,7 +572,8 @@ function keydown(event)
 // Den här funktionen kallas på varje frame. Den beräknar delta-tiden sedan
 // den föregående framen och invokerar sedan 'frame'-funktionen. Därefter
 // begär den en ny rendering. Du behöver inte ändra något i den här funktionen.
-function frameCallback(time) {
+function frameCallback(time) 
+{
 
     // Beräkna tiden sedan den föregående frame:n och uppdatera klockan.
     var deltaTime = time - shared.previousTime;
@@ -490,7 +629,8 @@ function frameCallback(time) {
 //
 // Du kan läsa om bakgrunden till varför vi gör detta i kursboken på s.15-17
 //
-function setWorldViewProjection() {
+function setWorldViewProjection() 
+{
     mat4.multiply(shared.worldViewProjectionMatrix, shared.viewProjectionMatrix, shared.worldMatrix);
     gl.uniformMatrix4fv(shared.worldViewProjectionMatrixLocation, false, shared.worldViewProjectionMatrix);
 
@@ -503,12 +643,10 @@ function setWorldViewProjection() {
 // skicka med till shader-programmet. Detta görs med funktionen
 // setWorldViewProjection(). Den tar inga in-parametrar, istället manipulerar du
 // 'shared.worldMatrix'.
-function drawScene(time) {
-
+function drawScene(time) 
+{
     // Bara ett kortare namn (detta är en pekare)
     var world = shared.worldMatrix;
-
-
 
     // Mellan --- nedan finns koden för att måla ut golvet. Motsvarande kod
     // behövs för varje objekt i scenen.
@@ -538,21 +676,42 @@ function drawScene(time) {
     // -------------------------------------------------------------------------
 
 
+    mat4.identity(world);
+
+    var houseOffset = vec3.fromValues(-15, -10, 0);
+    mat4.translate(world, world, houseOffset);
+
+    var rotationSpeed = 1.5;
+    mat4.rotate(world, world, time * rotationSpeed, vec3.fromValues(0,0,1));
+
+    setWorldViewProjection();
+
     drawHouse();
 
-    //
-    // <-- Här implementerar du kod liknande den ovan, men som kör drawHouse()
-    //     istället för drawSquare() och som transformerar objektet så som det
-    //     står i uppgiften.
-    //
 
-    //
-    // <-- Här implementerar du koden som kör drawHouse2()
-    //
+    mat4.identity(world);
 
-    //
-    // <-- Här implementerar du koden som kör drawPlanes()
-    //
+    var house2Offset = vec3.fromValues(15, -10, 0);
+    mat4.translate(world, world, house2Offset);
+
+    mat4.rotate(world, world, time * rotationSpeed, vec3.fromValues(0,0,1));
+
+    setWorldViewProjection();
+
+    drawHouse2();
+
+
+    mat4.identity(world);
+
+    setWorldViewProjection();
+
+    gl.enable(gl.BLEND);
+    gl.disable(gl.CULL_FACE);
+    //if(time % 2 === 0)        //doesnt need to be checked every draw call..
+    var dist = vec3.dist(shared.cameraPosition, shared.middleRed);  
+    drawPlanes(dist);
+    gl.enable(gl.CULL_FACE);
+    gl.disable(gl.BLEND);
 
     // Tips: Tänk på att sätta världsmatrisen till identity mellan olika
     //       draw-calls och att köra setWorldViewProjection() får att skicka
@@ -563,6 +722,19 @@ function drawScene(time) {
 
 }// function drawScene()
 
+function drawPlanes(dist)    
+{
+    if(dist < 80)   //when the camera is halfway towards the other plane, the distance is (max - min) = (120 - 40) = 80. 
+    {
+        drawPlaneBlue();
+        drawPlaneRed();
+    }
+    else
+    {
+        drawPlaneRed();
+        drawPlaneBlue();
+    }
+}
 
 // Den här funktionen målar ut golvet i scenen. Du behöver inte göra några
 // ändringar här. För att göra om golvet till en rektangel och byta färg ändrar
@@ -582,7 +754,8 @@ function drawSquare()
 
 // Den här funktionen målar ut det första huset i scenen. Du behöver inte göra 
 // några ändringar här. Huset skapar du i funktionen createHouse()
-function drawHouse() {
+function drawHouse() 
+{
     gl.bindBuffer(gl.ARRAY_BUFFER, shared.house.positionBuffer);
     gl.vertexAttribPointer(shared.vertexPositionLocation, 3, gl.FLOAT, gl.FALSE, 0, 0);
 
@@ -596,7 +769,8 @@ function drawHouse() {
 
 // Den här funktionen målar ut det andra huset i scenen. Du behöver inte göra 
 // några ändringar här. Huset skapar du i funktionen createHouse2()
-function drawHouse2() {
+function drawHouse2() 
+{
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shared.house2.indexBuffer);
     
     gl.bindBuffer(gl.ARRAY_BUFFER, shared.house2.positionBuffer);
@@ -620,14 +794,31 @@ function drawHouse2() {
 // Tips: Du kan hitta mycket tips genom att Googla på exempelvis "WebGL set
 //       blend mode"
 //
-function drawPlanes() {
-
-    //
-    // <-- Måla ut de halvtransparenta planen här med hjälp av en index-lista
-    //
-
+function drawPlaneBlue() 
+{
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shared.planeBlue.indexBuffer);  //needed?
+    
+    gl.bindBuffer(gl.ARRAY_BUFFER, shared.planeBlue.positionBuffer);
+    gl.vertexAttribPointer(shared.vertexPositionLocation, 3, gl.FLOAT, gl.FALSE, 0, 0);     
+    
+    gl.bindBuffer(gl.ARRAY_BUFFER, shared.planeBlue.colorBuffer);
+    gl.vertexAttribPointer(shared.vertexColorLocation, 4, gl.FLOAT, gl.FALSE, 0, 0);
+    
+    gl.drawElements(gl.TRIANGLES, shared.planeBlue.indiceCount, gl.UNSIGNED_SHORT, 0);  
 }// function drawPlanes()
 
+function drawPlaneRed()
+{
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shared.planeRed.indexBuffer);  //needed?
+        
+    gl.bindBuffer(gl.ARRAY_BUFFER, shared.planeRed.positionBuffer),
+    gl.vertexAttribPointer(shared.vertexPositionLocation, 3, gl.FLOAT, gl.FALSE, 0, 0);     
+    
+    gl.bindBuffer(gl.ARRAY_BUFFER, shared.planeRed.colorBuffer);
+    gl.vertexAttribPointer(shared.vertexColorLocation, 4, gl.FLOAT, gl.FALSE, 0, 0);
+    
+    gl.drawElements(gl.TRIANGLES, shared.planeRed.indiceCount, gl.UNSIGNED_SHORT, 0);
+}
 
 
 // -----------------------------------------------------------------------------
